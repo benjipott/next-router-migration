@@ -1,11 +1,4 @@
-import React, {
-  useEffect,
-  useMemo,
-  createContext,
-  useRef,
-  useContext,
-  useCallback
-} from 'react'
+import React, { useEffect, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/router'
 import NextLink, { LinkProps as NextLinkProps } from 'next/link'
 import { Location, History, To } from 'history'
@@ -19,19 +12,6 @@ interface match {
   isExact: boolean
   path: string
   url: string
-}
-
-type BrowserRouterState = { [key: string]: any } | undefined
-type BrowserRouterContext = {
-  state: React.MutableRefObject<BrowserRouterState>
-}
-
-const BrowserRouterCtx = createContext<BrowserRouterContext>({
-  state: typeof window !== 'undefined' && window.history?.state
-})
-
-export function useBrowserRouterCtx() {
-  return useContext(BrowserRouterCtx)
 }
 
 export const useLocation = (): Location => {
@@ -63,6 +43,9 @@ export const matchRouteWithPath = (
   path: string | string[],
   matchPath: string
 ): boolean => {
+  if (!path) {
+    return false
+  }
   const regex = pathToRegexp(path)
   let match
   if (typeof path === 'string') {
@@ -150,12 +133,7 @@ export const useHistory = (): History => {
 }
 
 export function BrowserRouter({ children }: { children?: React.ReactNode }) {
-  const state = useRef<BrowserRouterState>({})
-  return (
-    <BrowserRouterCtx.Provider value={{ state }}>
-      {children}
-    </BrowserRouterCtx.Provider>
-  )
+  return <>{children}</>
 }
 
 export const Switch = ({

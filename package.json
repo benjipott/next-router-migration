@@ -1,6 +1,6 @@
 {
   "name": "next-router-migration",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A simple router interface between react-router and next-router to simplify migration to Next and Vercel",
   "source": "index.tsx",
   "main": "./dist/index.js",

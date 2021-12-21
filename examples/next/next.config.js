@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 
+const path = require('path')
+
 module.exports = {
   reactStrictMode: true,
   experimental: {
@@ -12,7 +14,7 @@ module.exports = {
       ...config.resolve,
       alias: {
         ...config.resolve.alias,
-        'react-router-dom': 'next-router-migration'
+        'react-router-dom': path.resolve(__dirname, '../../index.tsx')
       }
     }
   })

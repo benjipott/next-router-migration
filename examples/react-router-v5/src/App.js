@@ -1,3 +1,4 @@
+import React from 'react'
 import { BrowserRouter, Switch, Route, Link } from 'react-router-dom'
 
 export default function App() {
@@ -9,8 +10,9 @@ export default function App() {
         <p>
           This example demonstrates some of the core features of React Router
           including nested <code>&lt;Route&gt;</code>s,{' '}
-          <code>&lt;Link&gt;</code>s, and using a "*" route (aka "splat route")
-          to render a "not found" page when someone visits an unrecognized URL.
+          <code>&lt;Link&gt;</code>
+          s, and using a "*" route (aka "splat route") to render a "not found"
+          page when someone visits an unrecognized URL.
         </p>
 
         {/*
@@ -20,8 +22,8 @@ export default function App() {
           you have multiple routes, but you want only one
           of them to render at a time
         */}
+        <Layout />
         <Switch>
-          <Layout />
           <Route path="/">
             <Home />
           </Route>
