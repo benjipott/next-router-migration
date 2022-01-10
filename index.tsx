@@ -4,8 +4,7 @@ import NextLink, { LinkProps as NextLinkProps } from 'next/link'
 import { Location, History, To } from 'history'
 import { ParsedUrlQuery, stringify } from 'querystring'
 
-// @ts-ignore
-import { pathToRegexp } from 'next/dist/compiled/path-to-regexp'
+import { pathToRegexp } from 'path-to-regexp'
 
 interface match {
   params: ParsedUrlQuery
@@ -14,6 +13,8 @@ interface match {
   url: string
 }
 
+const QUERY_AND_HASH_MATCHER = /(\?|#c-).*/
+
 export const useLocation = (): Location => {
   const { asPath, query } = useRouter()
 
@@ -21,7 +22,7 @@ export const useLocation = (): Location => {
 
   const location = useMemo(
     () => ({
-      pathname: asPath.replace(/#c-(.*)/, ''), // replace hash
+      pathname: asPath.replace(QUERY_AND_HASH_MATCHER, ''), // replace hash
       search: stringify(query),
       hash: '',
       state,
@@ -46,7 +47,13 @@ export const matchRouteWithPath = (
   if (!path) {
     return false
   }
+
+  if (path === '*') {
+    return true
+  }
+
   const regex = pathToRegexp(path)
+
   let match
   if (typeof path === 'string') {
     match = new RegExp(regex).exec(matchPath)
@@ -60,7 +67,7 @@ export const matchRouteWithPath = (
   return !!match
 }
 
-export const useRouteMatch = (path: string | string[]): match | null => {
+export const useRouteMatch = (path?: string | string[]): match | null => {
   const { query, asPath, pathname } = useRouter()
 
   let match = !path || matchRouteWithPath(path, asPath)
@@ -136,27 +143,58 @@ export function BrowserRouter({ children }: { children?: React.ReactNode }) {
   return <>{children}</>
 }
 
+export function Outlet({ children }: { children?: React.ReactNode }) {
+  return <>{children}</>
+}
+
 export const Switch = ({
   children
-}: React.PropsWithChildren<{ path: string | string[] }>) => {
+}: React.PropsWithChildren<{ path?: string | string[] }>) => {
   const { asPath } = useRouter()
 
   const childrenMatch = React.Children.toArray(children).find(element => {
     if (!React.isValidElement(element)) return
-    const { path } = element.props
-    return matchRouteWithPath(path, asPath)
+    const { path, index } = element.props
+    const testPath = path || (index && '/')
+    console.log({
+      path,
+      index,
+      children,
+      element,
+      testPath,
+      asPath,
+      isMatching: matchRouteWithPath(testPath, asPath)
+    })
+    return testPath && matchRouteWithPath(testPath, asPath)
   })
 
   return <React.Fragment>{childrenMatch}</React.Fragment>
 }
 
+export const Routes = Switch
+
 export const Route = ({
   children,
-  path
-}: React.PropsWithChildren<{ path: string | string[] }>) => {
+  element,
+  path,
+  index,
+  exact
+}: React.PropsWithChildren<{
+  exact?: boolean
+  index?: boolean
+  path?: string
+  element?: React.ReactNode
+}>) => {
   const match = useRouteMatch(path)
 
-  return (match && children) || <>{null}</>
+  return (
+    (match && (exact ? match.isExact : true) && (
+      <Switch>
+        {element}
+        {children}
+      </Switch>
+    )) || <>{null}</>
+  )
 }
 
 interface LinkProps extends NextLinkProps {
@@ -184,12 +222,14 @@ export const Link = ({
 )
 
 export const Redirect = ({ to }: { to: To }) => {
-  const { push, asPath } = useRouter()
+  const { replace, asPath } = useRouter()
 
   useEffect(() => {
     const targetPath = typeof to === 'string' ? to : to.pathname
-    if (targetPath && asPath !== targetPath) push(targetPath)
-  }, [to, asPath, push])
+    if (targetPath && asPath !== targetPath) {
+      replace(targetPath, typeof to === 'object' ? to : undefined)
+    }
+  }, [to, asPath, replace])
 
   return null
 }

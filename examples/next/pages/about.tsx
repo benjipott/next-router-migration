@@ -1,3 +1,3 @@
-import App from '../../react-router-v5/src/App'
+import App from './'
 
 export default App

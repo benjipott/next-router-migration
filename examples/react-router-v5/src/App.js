@@ -24,7 +24,7 @@ export default function App() {
         */}
         <Layout />
         <Switch>
-          <Route path="/">
+          <Route exact path="/">
             <Home />
           </Route>
           <Route path="/about">

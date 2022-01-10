@@ -1,6 +1,6 @@
 {
   "name": "next-router-migration",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A simple router interface between react-router and next-router to simplify migration to Next and Vercel",
   "source": "index.tsx",
   "main": "./dist/index.js",
@@ -11,6 +11,7 @@
   ],
   "scripts": {
     "build": "microbundle --jsx React.createElement --no-sourcemap --compress",
+    "dev:next": "cd examples/next && npm run dev",
     "lint": "next lint",
     "test": "jest"
   },
@@ -39,8 +40,10 @@
     "@testing-library/react": "12.1.2",
     "@types/jest": "27.0.3",
     "@types/react": "17.0.37",
+    "@types/react-router": "5.1.17",
     "eslint-config-next": "12.0.7",
     "eslint": "8.5.0",
+    "path-to-regexp": "6.2.0",
     "history": "5.2.0",
     "jest": "27.4.5",
     "microbundle": "0.14.2",
